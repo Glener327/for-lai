@@ -4,7 +4,6 @@
   const canvas = document.getElementById('beach-screen');
   const ctx = canvas.getContext('2d');
   const couple = new Image();
-  const lyrics = document.getElementById('beach-lyrics');
   // Keep the requested skirt update while restoring the original beach scene.
   couple.src = 'assets/seated-couple-v4-ponytail.png';
   const BEACH_MUSIC_START = 12;
@@ -13,15 +12,6 @@
     { audio: new Audio('assets/lany-soft.mp3'), volume: 0.32, startAt: BEACH_MUSIC_START },
   ];
   const beachMusic = beachTracks[1].audio;
-  const lyricCues = [
-    { start: 12, end: 18, text: 'Ikaw ang akong Luna' },
-    { start: 18, end: 25, text: 'you make even the quiet nights feel warm' },
-    { start: 25, end: 32, text: 'one thought of you keeps me going' },
-    { start: 32, end: 39, text: 'you inspire me more than you know' },
-    { start: 39, end: 47, text: 'and I will always be rooting for you' },
-    { start: 47, end: 55, text: 'under every moon, I choose you' },
-  ];
-  let currentLyric = '';
   beachTracks.forEach(({ audio, startAt }) => {
     audio.preload = 'auto';
     audio.loop = startAt === 0;
@@ -92,7 +82,6 @@
         audio.pause();
         try { audio.currentTime = startAt; } catch (_) {}
       });
-      setLyric('');
     });
   }
 
@@ -112,22 +101,6 @@
 
   function setMuted(muted) {
     beachTracks.forEach(({ audio }) => { audio.muted = muted; });
-  }
-
-  function setLyric(text) {
-    if (!lyrics || text === currentLyric) return;
-    currentLyric = text;
-    lyrics.textContent = text;
-    lyrics.classList.toggle('has-line', Boolean(text));
-  }
-
-  function updateLyrics() {
-    if (!active || beachMusic.paused) {
-      setLyric('');
-      return;
-    }
-    const cue = lyricCues.find(({ start, end }) => beachMusic.currentTime >= start && beachMusic.currentTime < end);
-    setLyric(cue?.text || '');
   }
 
   function makeStars() {
@@ -341,7 +314,6 @@
 
   function draw(now) {
     if (active) frameId = requestAnimationFrame(draw);
-    updateLyrics();
     const t = active ? (now - startedAt) / 1000 : 0;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, width, height);
