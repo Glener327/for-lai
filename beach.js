@@ -11,14 +11,15 @@
     { audio: new Audio('assets/sea-waves.mp3'), volume: 0.48, startAt: 0 },
     { audio: new Audio('assets/lany-soft.mp3'), volume: 0.32, startAt: BEACH_MUSIC_START },
   ];
+  const oceanWaves = beachTracks[0];
   const beachMusic = beachTracks[1].audio;
+  let soundtrackStarted = false;
   beachTracks.forEach(({ audio, startAt }) => {
     audio.preload = 'auto';
     audio.loop = startAt === 0;
     audio.volume = 0;
   });
   beachMusic.addEventListener('ended', () => {
-    if (!active) return;
     try { beachMusic.currentTime = BEACH_MUSIC_START; } catch (_) {}
     beachMusic.play().catch(() => {});
   });
@@ -41,16 +42,14 @@
     };
   }
 
-  function fadeBeachTracks(scale, duration, onComplete) {
+  function fadeOceanWaves(scale, duration, onComplete) {
     cancelAnimationFrame(beachAudioFadeId);
-    const starts = beachTracks.map(({ audio }) => audio.volume);
+    const startVolume = oceanWaves.audio.volume;
     const started = performance.now();
     const tick = (now) => {
       const progress = Math.min(1, (now - started) / duration);
       const eased = 1 - Math.pow(1 - progress, 3);
-      beachTracks.forEach((track, index) => {
-        track.audio.volume = starts[index] + (track.volume * scale - starts[index]) * eased;
-      });
+      oceanWaves.audio.volume = startVolume + (oceanWaves.volume * scale - startVolume) * eased;
       if (progress < 1) beachAudioFadeId = requestAnimationFrame(tick);
       else {
         beachAudioFadeId = 0;
@@ -60,43 +59,40 @@
     beachAudioFadeId = requestAnimationFrame(tick);
   }
 
+  function startSoundtrack() {
+    if (!soundtrackStarted) {
+      try { beachMusic.currentTime = BEACH_MUSIC_START; } catch (_) {}
+    }
+    beachMusic.volume = beachTracks[1].volume;
+    const playback = beachMusic.play();
+    if (playback && typeof playback.then === 'function') {
+      playback.then(() => { soundtrackStarted = true; }).catch(() => {});
+    } else soundtrackStarted = true;
+  }
+
   function startOceanSound() {
     cancelAnimationFrame(beachAudioFadeId);
     beachAudioFadeId = 0;
-    beachTracks.forEach(({ audio, startAt }) => {
-      if (audio.paused) {
-        try { audio.currentTime = startAt; } catch (_) {}
-        audio.volume = 0;
-      }
-    });
-    const playback = beachTracks.map(({ audio }) => audio.play().catch(() => {}));
-    Promise.all(playback).then(() => {
-      if (active) fadeBeachTracks(1, 1200);
-    });
+    startSoundtrack();
+    if (oceanWaves.audio.paused) {
+      try { oceanWaves.audio.currentTime = 0; } catch (_) {}
+      oceanWaves.audio.volume = 0;
+    }
+    oceanWaves.audio.play().then(() => {
+      if (active) fadeOceanWaves(1, 1200);
+    }).catch(() => {});
   }
 
   function stopOceanSound() {
-    fadeBeachTracks(0, 750, () => {
+    fadeOceanWaves(0, 750, () => {
       if (active) return;
-      beachTracks.forEach(({ audio, startAt }) => {
-        audio.pause();
-        try { audio.currentTime = startAt; } catch (_) {}
-      });
+      oceanWaves.audio.pause();
+      try { oceanWaves.audio.currentTime = 0; } catch (_) {}
     });
   }
 
   function unlockBeachAudio() {
-    beachTracks.forEach(({ audio, startAt }) => {
-      audio.volume = 0;
-      const playback = audio.play();
-      if (playback && typeof playback.then === 'function') {
-        playback.then(() => {
-          if (active) return;
-          audio.pause();
-          try { audio.currentTime = startAt; } catch (_) {}
-        }).catch(() => {});
-      }
-    });
+    startSoundtrack();
   }
 
   function setMuted(muted) {
@@ -343,8 +339,14 @@
     ripples.push({ x: event.clientX, y: event.clientY, started: (performance.now() - startedAt) / 1000 });
   });
   // Some browsers require a second explicit interaction before audio can run.
-  window.addEventListener('pointerdown', () => { if (active) startOceanSound(); }, { passive: true });
-  window.addEventListener('keydown', () => { if (active) startOceanSound(); });
+  window.addEventListener('pointerdown', () => {
+    if (document.body.classList.contains('experience-started')) startSoundtrack();
+    if (active && oceanWaves.audio.paused) startOceanSound();
+  }, { passive: true });
+  window.addEventListener('keydown', () => {
+    if (document.body.classList.contains('experience-started')) startSoundtrack();
+    if (active && oceanWaves.audio.paused) startOceanSound();
+  });
   window.addEventListener('resize', resize);
   resize();
 

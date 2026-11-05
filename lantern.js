@@ -362,7 +362,6 @@
     active = true;
     startedAt = performance.now();
     frameId = requestAnimationFrame(draw);
-    startLanternMusic();
   }
 
   function isOverHeldLantern(event) {
@@ -396,19 +395,12 @@
   function stop() {
     active = false;
     cancelAnimationFrame(frameId);
-    stopLanternMusic();
   }
 
   couple.addEventListener('load', () => { if (!active) draw(0); });
   releaseLantern.addEventListener('load', () => { if (!active) draw(0); });
-  window.addEventListener('pointerdown', () => {
-    if (active && lanternMusic.paused) startLanternMusic();
-  }, { passive: true });
-  window.addEventListener('keydown', () => {
-    if (active && lanternMusic.paused) startLanternMusic();
-  });
   window.addEventListener('resize', resize);
   resize();
 
-  window.lanternScene = { start, stop, unlockAudio: unlockLanternMusic, setMuted };
+  window.lanternScene = { start, stop, unlockAudio: () => {}, setMuted };
 })();
