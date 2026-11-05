@@ -4,16 +4,33 @@
   const canvas = document.getElementById('beach-screen');
   const ctx = canvas.getContext('2d');
   const couple = new Image();
+  const lyrics = document.getElementById('beach-lyrics');
   // Keep the requested skirt update while restoring the original beach scene.
   couple.src = 'assets/seated-couple-v4-ponytail.png';
+  const BEACH_MUSIC_START = 12;
   const beachTracks = [
-    { audio: new Audio('assets/sea-waves.mp3'), volume: 0.48 },
-    { audio: new Audio('assets/lany-soft.mp3'), volume: 0.32 },
+    { audio: new Audio('assets/sea-waves.mp3'), volume: 0.48, startAt: 0 },
+    { audio: new Audio('assets/lany-soft.mp3'), volume: 0.32, startAt: BEACH_MUSIC_START },
   ];
-  beachTracks.forEach(({ audio }) => {
+  const beachMusic = beachTracks[1].audio;
+  const lyricCues = [
+    { start: 12, end: 18, text: 'Ikaw ang akong Luna' },
+    { start: 18, end: 25, text: 'you make even the quiet nights feel warm' },
+    { start: 25, end: 32, text: 'one thought of you keeps me going' },
+    { start: 32, end: 39, text: 'you inspire me more than you know' },
+    { start: 39, end: 47, text: 'and I will always be rooting for you' },
+    { start: 47, end: 55, text: 'under every moon, I choose you' },
+  ];
+  let currentLyric = '';
+  beachTracks.forEach(({ audio, startAt }) => {
     audio.preload = 'auto';
-    audio.loop = true;
+    audio.loop = startAt === 0;
     audio.volume = 0;
+  });
+  beachMusic.addEventListener('ended', () => {
+    if (!active) return;
+    try { beachMusic.currentTime = BEACH_MUSIC_START; } catch (_) {}
+    beachMusic.play().catch(() => {});
   });
 
   let width = 0;
@@ -56,9 +73,9 @@
   function startOceanSound() {
     cancelAnimationFrame(beachAudioFadeId);
     beachAudioFadeId = 0;
-    beachTracks.forEach(({ audio }) => {
+    beachTracks.forEach(({ audio, startAt }) => {
       if (audio.paused) {
-        try { audio.currentTime = 0; } catch (_) {}
+        try { audio.currentTime = startAt; } catch (_) {}
         audio.volume = 0;
       }
     });
@@ -71,22 +88,23 @@
   function stopOceanSound() {
     fadeBeachTracks(0, 750, () => {
       if (active) return;
-      beachTracks.forEach(({ audio }) => {
+      beachTracks.forEach(({ audio, startAt }) => {
         audio.pause();
-        try { audio.currentTime = 0; } catch (_) {}
+        try { audio.currentTime = startAt; } catch (_) {}
       });
+      setLyric('');
     });
   }
 
   function unlockBeachAudio() {
-    beachTracks.forEach(({ audio }) => {
+    beachTracks.forEach(({ audio, startAt }) => {
       audio.volume = 0;
       const playback = audio.play();
       if (playback && typeof playback.then === 'function') {
         playback.then(() => {
           if (active) return;
           audio.pause();
-          try { audio.currentTime = 0; } catch (_) {}
+          try { audio.currentTime = startAt; } catch (_) {}
         }).catch(() => {});
       }
     });
@@ -94,6 +112,22 @@
 
   function setMuted(muted) {
     beachTracks.forEach(({ audio }) => { audio.muted = muted; });
+  }
+
+  function setLyric(text) {
+    if (!lyrics || text === currentLyric) return;
+    currentLyric = text;
+    lyrics.textContent = text;
+    lyrics.classList.toggle('has-line', Boolean(text));
+  }
+
+  function updateLyrics() {
+    if (!active || beachMusic.paused) {
+      setLyric('');
+      return;
+    }
+    const cue = lyricCues.find(({ start, end }) => beachMusic.currentTime >= start && beachMusic.currentTime < end);
+    setLyric(cue?.text || '');
   }
 
   function makeStars() {
@@ -307,6 +341,7 @@
 
   function draw(now) {
     if (active) frameId = requestAnimationFrame(draw);
+    updateLyrics();
     const t = active ? (now - startedAt) / 1000 : 0;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, width, height);

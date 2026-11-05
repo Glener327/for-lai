@@ -191,6 +191,29 @@
     pointer-events: none;
   }
   body.show-beach .beach-message { opacity: 1; transform: translate(-50%, 0); }
+  .beach-lyrics {
+    position: fixed;
+    left: 50%;
+    bottom: clamp(88px, 14vh, 142px);
+    z-index: 3;
+    width: min(88vw, 680px);
+    min-height: 2.8em;
+    margin: 0;
+    padding: 10px 18px;
+    box-sizing: border-box;
+    border-radius: 18px;
+    color: #f7fbff;
+    background: linear-gradient(90deg, transparent, rgba(3, 10, 28, .62) 20%, rgba(3, 10, 28, .62) 80%, transparent);
+    font: italic 500 clamp(16px, 2.15vw, 23px)/1.35 Georgia, "Times New Roman", serif;
+    letter-spacing: .035em;
+    text-align: center;
+    text-shadow: 0 0 8px rgba(211, 230, 255, .9), 0 0 22px rgba(103, 157, 231, .58);
+    opacity: 0;
+    transform: translate(-50%, 8px);
+    transition: opacity .5s ease, transform .5s ease;
+    pointer-events: none;
+  }
+  body.show-beach .beach-lyrics.has-line { opacity: 1; transform: translate(-50%, 0); }
   .lantern-message {
     position: fixed;
     top: clamp(82px, 15vh, 145px);
@@ -662,6 +685,7 @@
 </section>
 <p class="dedication">flowers for you cutie <span class="heart" aria-hidden="true">♥</span></p>
     <p class="beach-message">the moon is beautiful isn't it?</p>
+    <p class="beach-lyrics" id="beach-lyrics" aria-live="polite"></p>
     <p class="lantern-message">make a wish with me</p>
     <p class="lantern-hint">tap the lantern to make a wish</p>
 <p class="next-indicator" id="next-indicator">click for the next scene</p>
