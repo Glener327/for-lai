@@ -5,6 +5,7 @@
   const stage = document.getElementById('envelope-stage');
   const envelope = document.getElementById('envelope');
   const letter = document.getElementById('love-letter');
+  const closeLetter = document.getElementById('close-letter');
 
   function openLetter() {
     stage.classList.add('is-open');
@@ -24,6 +25,10 @@
 
   envelope.addEventListener('click', () => {
     if (!stage.classList.contains('is-open')) openLetter();
+  });
+  closeLetter.addEventListener('click', () => {
+    resetLetter();
+    envelope.focus({ preventScroll: true });
   });
 
   window.letterScene = {
