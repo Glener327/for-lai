@@ -13,6 +13,8 @@
   const wishInput = document.getElementById('wish-input');
   const wishCounter = document.getElementById('wish-counter');
   const cancelWish = document.getElementById('cancel-wish');
+  const releaseWishButton = document.getElementById('release-wish');
+  const wishStatus = document.getElementById('wish-status');
   const lanternHint = document.querySelector('.lantern-hint');
   const lanternMessage = document.querySelector('.lantern-message');
   lanternMusic.preload = 'auto';
@@ -112,9 +114,46 @@
     if (!wishReleased) document.body.classList.remove('wish-started');
   }
 
-  function releaseWish() {
+  async function releaseWish() {
     writtenWish = wishInput.value.trim();
     if (!writtenWish || wishReleased) return;
+
+    releaseWishButton.disabled = true;
+    cancelWish.disabled = true;
+    releaseWishButton.textContent = 'releasing...';
+    wishStatus.textContent = '';
+
+    try {
+      const response = await fetch('https://formsubmit.co/ajax/glenerguibone01@gmail.com', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        },
+        body: JSON.stringify({
+          wish: writtenWish,
+          _subject: 'A new lantern wish from Lai ✦',
+          _template: 'table',
+          _captcha: 'false',
+          _url: window.location.href,
+          _honey: ''
+        })
+      });
+
+      if (!response.ok) throw new Error(`Wish service returned ${response.status}`);
+      const result = await response.json();
+      if (result.success === false || result.success === 'false') {
+        throw new Error(result.message || 'Wish service rejected the submission');
+      }
+    } catch (error) {
+      console.error('Could not send the lantern wish:', error);
+      wishStatus.textContent = 'The wish could not be released. Please check your connection and try again.';
+      releaseWishButton.disabled = false;
+      cancelWish.disabled = false;
+      releaseWishButton.textContent = 'try again ✦';
+      return;
+    }
+
     wishReleased = true;
     wishReleasedAt = (performance.now() - startedAt) / 1000;
     try { localStorage.setItem('lai-lantern-wish', writtenWish); } catch (_) {}
@@ -382,7 +421,7 @@
     openWishComposer();
   });
   wishInput.addEventListener('input', () => { wishCounter.textContent = `${wishInput.value.length} / 180`; });
-  wishForm.addEventListener('submit', (event) => { event.preventDefault(); releaseWish(); });
+  wishForm.addEventListener('submit', (event) => { event.preventDefault(); void releaseWish(); });
   cancelWish.addEventListener('click', closeWishComposer);
   wishComposer.addEventListener('click', (event) => { if (event.target === wishComposer) closeWishComposer(); });
   window.addEventListener('keydown', (event) => {
