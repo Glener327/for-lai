@@ -498,26 +498,27 @@
     position: sticky;
     top: 0;
     z-index: 8;
-    float: right;
-    display: grid;
-    place-items: center;
-    width: 38px;
-    height: 38px;
-    margin: -10px -10px 10px 14px;
-    padding: 0;
-    border: 1px solid rgba(143, 54, 88, .38);
-    border-radius: 50%;
-    color: #7d2e4d;
-    background: rgba(255, 249, 237, .94);
-    box-shadow: 0 5px 14px rgba(63, 24, 40, .16);
-    font: 500 25px/1 Arial, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    min-height: 44px;
+    margin: -10px auto 18px;
+    padding: 0 19px;
+    border: 2px solid rgba(255, 255, 255, .88);
+    border-radius: 999px;
+    color: #fff;
+    background: #a93f66;
+    box-shadow: 0 7px 18px rgba(102, 25, 55, .34), 0 0 0 4px rgba(169, 63, 102, .12);
+    font: 700 12px/1.2 Menlo, Consolas, monospace;
+    letter-spacing: .055em;
     cursor: pointer;
     opacity: 0;
     pointer-events: none;
     transition: opacity .25s, transform .2s, background .2s;
   }
-  .close-letter:hover { transform: scale(1.08); background: #f9dce6; }
-  .close-letter:focus-visible { outline: 3px solid #8f3658; outline-offset: 3px; }
+  .close-letter:hover { transform: translateY(-2px) scale(1.03); background: #c34b79; }
+  .close-letter:focus-visible { outline: 3px solid #5d1e38; outline-offset: 3px; }
   .envelope-stage.is-open .envelope-flap { transform: rotateX(180deg); z-index: 1; }
   .envelope-stage.is-open .envelope-seal { opacity: 0; }
   .envelope-stage.is-open .love-letter {
@@ -528,7 +529,7 @@
     pointer-events: auto;
     transform: translate(-50%, -50%) scale(1);
   }
-  .envelope-stage.is-open .close-letter { opacity: 1; pointer-events: auto; }
+  .envelope-stage.is-open .close-letter { opacity: 1; pointer-events: auto; animation: continue-pulse 1.7s ease-in-out infinite; }
   .envelope-stage.is-open .love-letter p { animation: letter-ink .8s both; }
   .envelope-stage.is-open .love-letter p:nth-of-type(2) { animation-delay: .08s; }
   .envelope-stage.is-open .love-letter p:nth-of-type(3) { animation-delay: .16s; }
@@ -642,6 +643,7 @@
     100% { opacity: .98; transform: translateY(0) scale(1); filter: blur(0); }
   }
   @keyframes letter-ink { from { opacity: 0; transform: translateY(10px); filter: blur(2px); } to { opacity: 1; transform: none; filter: none; } }
+  @keyframes continue-pulse { 50% { box-shadow: 0 8px 22px rgba(102, 25, 55, .38), 0 0 0 8px rgba(169, 63, 102, .12); transform: translateY(-1px); } }
   @media (prefers-reduced-motion: reduce) {
     .dedication.is-visible { animation: none; opacity: 1; transform: translate(-50%, 0); letter-spacing: .08em; }
     .dedication.is-visible::before,
@@ -659,7 +661,7 @@
     .encouragement-card, .encouragement-scene::before { animation: none !important; }
     .encouragement-scene::before { opacity: 1; }
     .envelope-flap, .love-letter { transition-duration: .01ms; }
-    .magic-particle, body.is-transitioning .transition-glow, .envelope-stage.is-open .love-letter p { animation: none; }
+    .magic-particle, body.is-transitioning .transition-glow, .envelope-stage.is-open .love-letter p, .envelope-stage.is-open .close-letter { animation: none; }
     .wish-flame { animation: none; }
     .lantern-hint::after { animation: none; }
   }
@@ -725,7 +727,7 @@
       <span class="envelope-seal" aria-hidden="true">♥</span>
     </button>
     <article class="love-letter" id="love-letter" aria-label="A letter for Lai">
-      <button class="close-letter" id="close-letter" type="button" aria-label="Close the letter">×</button>
+      <button class="close-letter" id="close-letter" type="button" aria-label="Continue to one last surprise">one last surprise →</button>
       <h2>To my Luna,</h2>
       <p>Hello, Lai! I'll start by saying thank you. Thank you kay ga-exist ka, and thank you sad sa fate and kay God na gipa-meet ta, because life is so boring without you, Lai. It's like I'm in a loop na balik-balik lang ang mahitabo. Pero if naa ka, it's like sunshine and rainbows. Naa koy ginaabangan every day, and it makes me excited for today or tomorrow, which rarely happens sa akoa.</p>
 
