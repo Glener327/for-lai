@@ -709,6 +709,7 @@
   });
   window.addEventListener('wish-released', () => burstMagic(innerWidth / 2, innerHeight * .55, 'star', 24));
   window.addEventListener('letter-opened', () => burstMagic(innerWidth / 2, innerHeight * .5, 'heart', 22));
+  window.addEventListener('letter-closed', () => showScene(4));
 
   nextButton.addEventListener('click', () => {
     showScene(sceneIndex + 1);

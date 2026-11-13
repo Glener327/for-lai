@@ -395,6 +395,9 @@
   body.show-beach .next-button { background: rgba(8, 20, 49, .78); border-color: rgba(181, 216, 255, .7); box-shadow: 0 8px 28px rgba(94, 155, 255, .24); }
   body.show-lantern .next-button { background: rgba(59, 27, 15, .82); border-color: rgba(255, 208, 127, .8); box-shadow: 0 8px 28px rgba(255, 158, 64, .3); }
   body.show-letter .next-button { background: rgba(74, 32, 51, .88); border-color: rgba(255, 196, 217, .8); }
+  body.show-letter .next-button,
+  body.show-letter .next-indicator,
+  body.show-letter .next-note { opacity: 0 !important; pointer-events: none !important; }
   body.show-encouragement .next-button { background: rgba(48, 33, 91, .88); border-color: rgba(221, 203, 255, .82); box-shadow: 0 8px 28px rgba(149, 114, 226, .3); }
   .next-indicator {
     position: fixed;
@@ -782,9 +785,9 @@
   </svg>
 </button>
 <p class="next-note" id="next-note" role="status" aria-live="polite">a night by the shore</p>
-<script src="bouquet.js?v=20261114-2"></script>
-<script src="beach.js?v=20261114-2"></script>
-<script src="lantern.js?v=20261114-2"></script>
-<script src="letter.js?v=20261114-2"></script>
+<script src="bouquet.js?v=20261114-3"></script>
+<script src="beach.js?v=20261114-3"></script>
+<script src="lantern.js?v=20261114-3"></script>
+<script src="letter.js?v=20261114-3"></script>
 </body>
 </html>

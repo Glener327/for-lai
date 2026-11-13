@@ -28,7 +28,7 @@
   });
   closeLetter.addEventListener('click', () => {
     resetLetter();
-    envelope.focus({ preventScroll: true });
+    window.dispatchEvent(new CustomEvent('letter-closed'));
   });
 
   window.letterScene = {
