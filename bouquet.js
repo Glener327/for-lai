@@ -590,6 +590,7 @@
   const fxLayer = document.getElementById('fx-layer');
   const nextNote = document.getElementById('next-note');
   const nextIndicator = document.getElementById('next-indicator');
+  const encouragementScene = document.getElementById('encouragement-scene');
   const startOverlay = document.getElementById('start-overlay');
   const startExperience = document.getElementById('start-experience');
   const notGwapo = document.getElementById('not-gwapo');
@@ -651,21 +652,25 @@
     document.body.classList.add('is-transitioning');
     window.clearTimeout(transitionTimer);
     transitionTimer = window.setTimeout(() => document.body.classList.remove('is-transitioning'), 760);
-    sceneIndex = (index + 4) % 4;
+    sceneIndex = (index + 5) % 5;
     const showingBeach = sceneIndex === 1;
     const showingLanterns = sceneIndex === 2;
     const showingLetter = sceneIndex === 3;
+    const showingEncouragement = sceneIndex === 4;
     flowerSceneActive = sceneIndex === 0;
     document.body.classList.toggle('scene-flowers', flowerSceneActive);
     document.body.classList.toggle('show-beach', showingBeach);
     document.body.classList.toggle('show-lantern', showingLanterns);
     document.body.classList.toggle('show-letter', showingLetter);
-    nextButton.classList.toggle('is-back', showingLetter);
+    document.body.classList.toggle('show-encouragement', showingEncouragement);
+    encouragementScene.setAttribute('aria-hidden', String(!showingEncouragement));
+    nextButton.classList.toggle('is-back', showingEncouragement);
 
     const buttonLabels = [
       'View beach animation',
       'View floating lantern animation',
       'View special letter',
+      'View encouragement message',
       'Back to flowers',
     ];
     const notes = [
@@ -673,11 +678,12 @@
       'a night by the shore',
       'our wish in the sky',
       'a letter for you',
+      'one last thing for you',
     ];
     nextButton.setAttribute('aria-label', buttonLabels[sceneIndex]);
     nextButton.setAttribute('title', buttonLabels[sceneIndex]);
     nextNote.textContent = notes[sceneIndex];
-    nextIndicator.textContent = showingLetter ? 'back to the flowers' : 'click for the next scene';
+    nextIndicator.textContent = showingEncouragement ? 'back to the flowers' : 'click for the next scene';
     sceneDots.forEach((dot, dotIndex) => {
       if (dotIndex === sceneIndex) dot.setAttribute('aria-current', 'step');
       else dot.removeAttribute('aria-current');
@@ -689,6 +695,7 @@
     else window.lanternScene?.stop();
     if (showingLetter) window.letterScene?.start();
     else window.letterScene?.stop();
+    if (showingEncouragement) burstMagic(innerWidth / 2, innerHeight * .42, 'heart', 18);
     if (sceneIndex === 0) replay();
 
     nextNote.classList.add('is-visible');
